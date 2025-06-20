@@ -85,12 +85,11 @@ def stat_card(title, value, icon=None, color="black"):
 # ----------------------------------
 # Main Content with Tabs
 # ----------------------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4 = st.tabs([
     "📍 Overview",
     "🏬 Store Sales Performance",
     "🎉 Holiday Impact",
-    "🔮 Forecast (Coming Soon)",
-    "📄 Raw Data"
+    "🔮 Forecast (Coming Soon)"
 ])
 
 with tab1:
@@ -557,37 +556,6 @@ with tab4:
 
     Stay tuned for future updates! 📈✨
     """)
-
-
-with tab5:
-    st.header("📄 Raw Data")
-    st.markdown("Explore the complete dataset used in this dashboard.")
-
-    # Optional: Add filters to explore specific rows
-    with st.expander("🔍 Filter Options"):
-        selected_store = st.selectbox("🏪 Filter by Store", options=["All"] + sorted(df['Store'].unique()), key='raw_store')
-        selected_dept = st.selectbox("📦 Filter by Department", options=["All"] + sorted(df['Dept'].unique()), key='raw_dept')
-        selected_year = st.selectbox("📆 Filter by Year", options=["All"] + sorted(df['Year'].unique()), key='raw_year')
-
-        df_raw = df.copy()
-
-        if selected_store != "All":
-            df_raw = df_raw[df_raw['Store'] == selected_store]
-        if selected_dept != "All":
-            df_raw = df_raw[df_raw['Dept'] == selected_dept]
-        if selected_year != "All":
-            df_raw = df_raw[df_raw['Year'] == selected_year]
-
-    st.dataframe(df_raw, use_container_width=True)
-
-     # CSV download button
-    csv = df_raw.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="⬇️ Download Filtered Data as CSV",
-        data=csv,
-        file_name='filtered_sales_data.csv',
-        mime='text/csv'
-    )
 
     
 # ========================
