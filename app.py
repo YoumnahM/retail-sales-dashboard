@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from prophet import Prophet
 
 
 # --- Set page config (must be first Streamlit command) ---
@@ -267,7 +268,7 @@ with tab1:
     # --- ALERT: Top Performing Department ---
     top_dept = df_filtered.groupby('Dept_Name')['Weekly_Sales'].sum().reset_index()\
                 .sort_values('Weekly_Sales', ascending=False).iloc[0]
-    st.info(f"🏆 **{top_dept['Dept_Name']}** is currently your top-performing department with ${top_dept['Weekly_Sales']:,.0f} in sales.")
+    st.success(f"🏆 **{top_dept['Dept_Name']}** is currently your top-performing department with ${top_dept['Weekly_Sales']:,.0f} in sales.")
 
     # --- ALERT: Holiday uplift trend ---
     holiday_sales = df_filtered[df_filtered['IsHoliday_x'] == True]['Weekly_Sales'].mean()
@@ -702,13 +703,84 @@ with tab3:
     st.info("🔍 **Insight:** Markdowns work—but only some types truly drive volume. Avoid unnecessary discounts on ineffective markdowns.")
 
 
+# ====================
+# 🔮 Forecast Tab
+# ====================
 with tab4:
-    st.header("🔮 Forecast (Coming Soon)")
-    st.markdown("""
-    🚧 We're working on predictive analytics using advanced forecasting models like machine learning algorithms.
+    st.subheader("🔮 Sales Forecast")
+    st.markdown("Use AI-powered forecasting to project future sales and plan ahead with confidence.")
 
-    Stay tuned for future updates! 📈✨
-    """)
+    # --- Select Store & Department ---
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_store = st.selectbox(
+            "🏪 Select Store",
+            options=["All"] + sorted(df['Store_Name'].unique()),
+            key="forecast_store"
+        )
+    with col2:
+        selected_dept = st.selectbox(
+            "📦 Select Department",
+            options=["All"] + sorted(df['Dept_Name'].unique()),
+            key="forecast_dept"
+        )
+
+    # --- Filter Data ---
+    df_forecast = df.copy()
+    if selected_store != "All":
+        df_forecast = df_forecast[df_forecast["Store_Name"] == selected_store]
+    if selected_dept != "All":
+        df_forecast = df_forecast[df_forecast["Dept_Name"] == selected_dept]
+
+    # --- Prepare Data for Prophet ---
+    prophet_data = df_forecast.groupby("Date")["Weekly_Sales"].sum().reset_index()
+    prophet_data.rename(columns={"Date": "ds", "Weekly_Sales": "y"}, inplace=True)
+
+    if len(prophet_data) >= 30:  # Need enough data for forecasting
+        # --- Train Prophet Model ---
+        from prophet import Prophet
+        model = Prophet()
+        model.fit(prophet_data)
+
+        # --- Create Future Dates ---
+        future = model.make_future_dataframe(periods=12, freq='W')
+        forecast = model.predict(future)
+
+        # --- Plot Forecast ---
+        fig_forecast = px.line(
+            forecast,
+            x='ds',
+            y='yhat',
+            title="📈 12-Week Sales Forecast",
+            labels={'ds': 'Date', 'yhat': 'Predicted Sales'},
+        )
+        fig_forecast.add_scatter(x=prophet_data['ds'], y=prophet_data['y'], mode='lines', name='Historical Sales')
+        st.plotly_chart(fig_forecast, use_container_width=True)
+
+        # --- Show Forecast Table ---
+        forecast_result = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(12)
+        forecast_result.rename(columns={
+            'ds': 'Date',
+            'yhat': 'Predicted Sales',
+            'yhat_lower': 'Lower Estimate',
+            'yhat_upper': 'Upper Estimate'
+        }, inplace=True)
+
+        with st.expander("📄 Forecast Table (Next 12 Weeks)"):
+            st.dataframe(forecast_result.style.format({
+                "Predicted Sales": "${:,.0f}",
+                "Lower Estimate": "${:,.0f}",
+                "Upper Estimate": "${:,.0f}",
+            }))
+
+        st.info("""
+        📌 **Business Insight:**  
+        This forecast helps you anticipate future sales performance and plan inventory, staffing, and promotions.  
+        Use the upper and lower bounds to plan for both conservative and optimistic scenarios.
+        """)
+    else:
+        st.warning("⚠️ Not enough historical data for reliable forecasting. Please select a store/department with more data.")
+
 
     
 # ========================
