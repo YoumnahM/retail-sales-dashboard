@@ -658,24 +658,24 @@ with tab3:
     st.markdown("---")
 
     # --- 6. Holiday Sales Lift vs Non-Holiday Weeks ---
-    st.markdown("### 📈 Holiday Sales Lift (%)")
+    # st.markdown("### 📈 Holiday Sales Lift (%)")
 
-    base = df_filtered[df_filtered['Holiday_Type'] == 'None']['Weekly_Sales'].sum()
-    holiday_totals['Sales_Lift_%'] = ((holiday_totals['Total Sales'] / base) - 1) * 100
+    # base = df_filtered[df_filtered['Holiday_Type'] == 'None']['Weekly_Sales'].sum()
+    # holiday_totals['Sales_Lift_%'] = ((holiday_totals['Total Sales'] / base) - 1) * 100
 
-    fig_lift = px.bar(
-        holiday_totals,
-        x='Holiday_Type',
-        y='Sales_Lift_%',
-        title="📈 Holiday Sales Uplift vs Normal Weeks",
-        labels={'Sales_Lift_%': 'Sales Lift (%)'},
-        color='Sales_Lift_%',
-        color_continuous_scale='Teal'
-    )
-    st.plotly_chart(fig_lift, use_container_width=True)
-    st.info("🔍 **Insight:** Sales lift tells you which holidays outperform normal weeks. Combine this with gross margin data to know where to push hardest.")
+    # fig_lift = px.bar(
+    #     holiday_totals,
+    #     x='Holiday_Type',
+    #     y='Sales_Lift_%',
+    #     title="📈 Holiday Sales Uplift vs Normal Weeks",
+    #     labels={'Sales_Lift_%': 'Sales Lift (%)'},
+    #     color='Sales_Lift_%',
+    #     color_continuous_scale='Teal'
+    # )
+    # st.plotly_chart(fig_lift, use_container_width=True)
+    # st.info("🔍 **Insight:** Sales lift tells you which holidays outperform normal weeks. Combine this with gross margin data to know where to push hardest.")
 
-    st.markdown("---")
+    # st.markdown("---")
 
     # --- 7. Markdown Impact ---
     st.markdown("### 🏷️ Markdowns and Sales")
