@@ -739,6 +739,8 @@ with tab4:
     if len(prophet_data) >= 30:  # Need enough data for forecasting
         # --- Train Prophet Model ---
         from prophet import Prophet
+        import os
+        os.environ["PROPHET_BACKEND"] = "pystan"
         model = Prophet()
         model.fit(prophet_data)
 
