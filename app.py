@@ -1,5 +1,5 @@
 import os
-os.environ["PROPHET_BACKEND"] = "pystan"
+os.environ["PROPHET_BACKEND"] = "CMDSTANPY"
 import streamlit as st
 import pandas as pd
 import plotly.express as px

@@ -1,14 +1,12 @@
 streamlit==1.45.1
 pandas==2.2.3
-numpy==1.26.4          # keep NumPy <2 for Prophet/PyStan wheels
+numpy==1.26.4
 plotly==5.24.1
 openpyxl==3.1.5
 
 prophet==1.1.6
-pystan==3.10.0         # works with httpstan 4.13.0
-httpstan==4.13.0       # satisfy dependency explicitly
+cmdstanpy==1.2.4
 
-cmdstanpy==1.2.4       # optional but harmless
 streamlit-option-menu==0.4.0
 seaborn==0.13.2
 matplotlib==3.9.2
